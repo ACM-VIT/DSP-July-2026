@@ -1,0 +1,43 @@
+@import '@fontsource-variable/bricolage-grotesque';
+@import '@fontsource-variable/dm-sans';
+@import '@fontsource-variable/inter';
+@import 'tailwindcss';
+
+@theme {
+  --color-canvas: #000000;
+  --color-surface: #151515;
+  --color-copy: #f9f9f9;
+  --color-accent: #8dd0ff;
+  --font-display: 'Bricolage Grotesque Variable', sans-serif;
+  --font-numeric: 'DM Sans Variable', sans-serif;
+  --font-sans: 'Inter Variable', sans-serif;
+}
+
+@layer base {
+  :root {
+    color: var(--color-white);
+    background: var(--color-canvas);
+    font-family: var(--font-display);
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  html {
+    background: var(--color-canvas);
+    scroll-behavior: smooth;
+  }
+
+  body {
+    min-width: 320px;
+    min-height: 100svh;
+    background: var(--color-canvas);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+}
