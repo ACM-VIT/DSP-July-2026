@@ -38,8 +38,8 @@ fallback is the date shown in Figma and is already in the past.
 
 ## Deployment
 
-The shader-development build is deployed as Cloudflare Workers static assets at
-[dsp.ashman.foo](https://dsp.ashman.foo). Build and deploy it with:
+The shader-development build is deployed as Cloudflare Workers static assets. Build and deploy it
+with:
 
 ```sh
 bun run deploy:shader
