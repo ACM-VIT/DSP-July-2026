@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
 type PixelAnimation = 'appear' | 'disappear'
 type PixelCardVariant = 'default' | 'blue' | 'yellow' | 'pink'
@@ -45,6 +45,7 @@ const props = withDefaults(
     speed?: number
     colors?: string
     noFocus?: boolean
+    density?: number
   }>(),
   {
     variant: 'default',
@@ -52,6 +53,7 @@ const props = withDefaults(
     speed: undefined,
     colors: undefined,
     noFocus: undefined,
+    density: 1,
   },
 )
 
@@ -148,11 +150,12 @@ let animationFrame: number | undefined
 let previousTime = performance.now()
 let resizeObserver: ResizeObserver | undefined
 
-const variantSettings = variants[props.variant]
-const gap = props.gap ?? variantSettings.gap
-const speed = props.speed ?? variantSettings.speed
-const colors = props.colors ?? variantSettings.colors
-const noFocus = props.noFocus ?? variantSettings.noFocus
+const variantSettings = computed(() => variants[props.variant])
+const gap = computed(() => props.gap ?? variantSettings.value.gap)
+const speed = computed(() => props.speed ?? variantSettings.value.speed)
+const colors = computed(() => props.colors ?? variantSettings.value.colors)
+const noFocus = computed(() => props.noFocus ?? variantSettings.value.noFocus)
+const density = computed(() => Math.min(1, Math.max(0, props.density)))
 const reducedMotion =
   typeof window !== 'undefined' &&
   window.matchMedia?.('(prefers-reduced-motion: reduce)').matches === true
@@ -160,6 +163,16 @@ const reducedMotion =
 function effectiveSpeed(value: number) {
   if (value <= 0 || reducedMotion) return 0
   return Math.min(value, 100) * 0.001
+}
+
+function includesPixel(column: number, row: number) {
+  if (density.value >= 1) return true
+  if (density.value === 0.5) return (column + row) % 2 === 0
+
+  const sequence = (column + row * 4096) * 0.618_033_988_749_895
+  const sample = sequence - Math.floor(sequence)
+
+  return sample < density.value
 }
 
 function initializePixels() {
@@ -176,9 +189,15 @@ function initializePixels() {
   canvas.value.height = height
   pixels.length = 0
 
-  const palette = colors.split(',')
-  for (let x = 0; x < width; x += gap) {
-    for (let y = 0; y < height; y += gap) {
+  const palette = colors.value.split(',')
+  let column = 0
+
+  for (let x = 0; x < width; x += gap.value, column += 1) {
+    let row = 0
+
+    for (let y = 0; y < height; y += gap.value, row += 1) {
+      if (!includesPixel(column, row)) continue
+
       const color = palette[Math.floor(Math.random() * palette.length)] ?? palette[0] ?? '#f8fafc'
       const distance = Math.hypot(x - width / 2, y - height / 2)
       pixels.push(
@@ -188,7 +207,7 @@ function initializePixels() {
           x,
           y,
           color,
-          effectiveSpeed(speed),
+          effectiveSpeed(speed.value),
           reducedMotion ? 0 : distance,
         ),
       )
@@ -228,13 +247,13 @@ function startAnimation(animation: PixelAnimation) {
 }
 
 function handleFocus(event: FocusEvent) {
-  if (noFocus || event.currentTarget instanceof Node === false) return
+  if (noFocus.value || event.currentTarget instanceof Node === false) return
   if ((event.currentTarget as Node).contains(event.relatedTarget as Node | null)) return
   startAnimation('appear')
 }
 
 function handleBlur(event: FocusEvent) {
-  if (noFocus || event.currentTarget instanceof Node === false) return
+  if (noFocus.value || event.currentTarget instanceof Node === false) return
   if ((event.currentTarget as Node).contains(event.relatedTarget as Node | null)) return
   startAnimation('disappear')
 }
@@ -247,6 +266,8 @@ onMounted(() => {
   if (container.value) resizeObserver.observe(container.value)
 })
 
+watch([gap, speed, colors, density], initializePixels)
+
 onBeforeUnmount(() => {
   resizeObserver?.disconnect()
   if (animationFrame !== undefined) cancelAnimationFrame(animationFrame)
@@ -258,6 +279,7 @@ onBeforeUnmount(() => {
     ref="container"
     class="pixel-card"
     :tabindex="noFocus ? -1 : 0"
+    :data-pixel-density="density"
     @mouseenter="startAnimation('appear')"
     @mouseleave="startAnimation('disappear')"
     @focus="handleFocus"
