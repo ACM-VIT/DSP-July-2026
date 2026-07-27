@@ -30,7 +30,7 @@ type RendererResources = {
     detailAmplitude: WebGLUniformLocation
     microFrequency: WebGLUniformLocation
     microAmplitude: WebGLUniformLocation
-    scrollDistortion: WebGLUniformLocation
+    scrollFlow: WebGLUniformLocation
     rotation: WebGLUniformLocation
     cameraDistance: WebGLUniformLocation
     opacity: WebGLUniformLocation
@@ -44,6 +44,12 @@ const DESKTOP_SEGMENTS = { longitude: 72, latitude: 48 }
 const MOBILE_SEGMENTS = { longitude: 48, latitude: 32 }
 const MOBILE_BREAKPOINT = 760
 const MAX_DEVICE_PIXEL_RATIO = 1.5
+// Wave phase advanced per pixel scrolled. One viewport of scrolling (~800px) moves
+// the field by a little over one wave, so the flow reads clearly without churning.
+const SCROLL_FLOW_PER_PIXEL = 0.002
+// How fast scroll momentum bleeds off once input stops, in 1/seconds. Lower drifts
+// on for longer after you let go.
+const SCROLL_VELOCITY_DECAY = 5.5
 
 function createShader(gl: WebGL2RenderingContext, shaderType: number, source: string): WebGLShader {
   const shader = gl.createShader(shaderType)
@@ -151,7 +157,7 @@ function createResources(gl: WebGL2RenderingContext): RendererResources {
       detailAmplitude: getUniform(gl, program, 'uDetailAmplitude'),
       microFrequency: getUniform(gl, program, 'uMicroFrequency'),
       microAmplitude: getUniform(gl, program, 'uMicroAmplitude'),
-      scrollDistortion: getUniform(gl, program, 'uScrollDistortion'),
+      scrollFlow: getUniform(gl, program, 'uScrollFlow'),
       rotation: getUniform(gl, program, 'uRotation'),
       cameraDistance: getUniform(gl, program, 'uCameraDistance'),
       opacity: getUniform(gl, program, 'uOpacity'),
@@ -195,7 +201,8 @@ export function createRenderer(
   let isContextLost = false
   let startTime = performance.now()
   let lastFrameTime = startTime
-  let scrollDistortion = 0
+  let scrollFlow = 0
+  let scrollVelocity = 0
 
   configureContext(gl)
 
@@ -255,7 +262,16 @@ export function createRenderer(
     const rotation = prefersReducedMotion ? 0.35 : elapsedSeconds * settings.rotationSpeed
 
     lastFrameTime = timestamp
-    scrollDistortion *= Math.exp(-frameDelta * 5.5)
+
+    // Scroll speed arrives as signed px/second, so every input device — trackpad,
+    // wheel, touch — moves the waves the same distance for the same physical scroll.
+    // Integrating velocity into a phase means the wave field keeps travelling and
+    // eases to a stop rather than an effect switching on and off. Both the decay and
+    // the integration are in seconds, so motion matches at 60Hz, 120Hz or while
+    // stuttering. The phase is signed and tracks scroll direction, so it stays bounded
+    // by how far the page can actually scroll rather than growing without limit.
+    scrollVelocity *= Math.exp(-frameDelta * SCROLL_VELOCITY_DECAY)
+    scrollFlow += scrollVelocity * frameDelta * SCROLL_FLOW_PER_PIXEL
 
     gl.clear(gl.COLOR_BUFFER_BIT)
     gl.useProgram(resources.program)
@@ -275,10 +291,7 @@ export function createRenderer(
     gl.uniform1f(resources.uniforms.detailAmplitude, settings.detailAmplitude)
     gl.uniform1f(resources.uniforms.microFrequency, settings.microFrequency)
     gl.uniform1f(resources.uniforms.microAmplitude, settings.microAmplitude)
-    gl.uniform1f(
-      resources.uniforms.scrollDistortion,
-      prefersReducedMotion ? 0 : scrollDistortion,
-    )
+    gl.uniform1f(resources.uniforms.scrollFlow, prefersReducedMotion ? 0 : scrollFlow)
     gl.uniform1f(resources.uniforms.rotation, rotation)
     gl.uniform1f(resources.uniforms.cameraDistance, cameraDistance)
     gl.uniform1f(resources.uniforms.opacity, settings.opacity)
@@ -394,12 +407,17 @@ export function createRenderer(
       prefersReducedMotion = nextPrefersReducedMotion
       requestRender()
     },
-    setScrollDistortion(strength) {
-      if (prefersReducedMotion) {
+    setScrollVelocity(pixelsPerSecond) {
+      if (prefersReducedMotion || !Number.isFinite(pixelsPerSecond)) {
         return
       }
 
-      scrollDistortion = Math.max(scrollDistortion, Math.min(1, Math.max(0, strength)))
+      // Several scroll events can land in one frame; keep the fastest sample so a
+      // burst of events reads as one fast scroll rather than several slow ones.
+      // Compared by magnitude, since the sign carries the scroll direction.
+      if (Math.abs(pixelsPerSecond) > Math.abs(scrollVelocity)) {
+        scrollVelocity = pixelsPerSecond
+      }
       requestRender()
     },
     setSettings(nextSettings) {

@@ -12,6 +12,7 @@ let renderer: OrganicSphereRenderer | null = null
 let intersectionObserver: IntersectionObserver | null = null
 let reducedMotionQuery: MediaQueryList | null = null
 let previousScrollY = 0
+let previousScrollTime = 0
 
 function handleReducedMotionChange(event: MediaQueryListEvent) {
   renderer?.setReducedMotion(event.matches)
@@ -19,9 +20,16 @@ function handleReducedMotionChange(event: MediaQueryListEvent) {
 
 function handleScroll() {
   const scrollY = window.scrollY
-  const scrollDelta = Math.abs(scrollY - previousScrollY)
+  const now = performance.now()
+  // Scroll events fire at wildly different rates per device, so measure px/second
+  // rather than px-per-event. The lower clamp keeps same-millisecond events from
+  // dividing by ~0; the upper one stops a long gap reading as a crawl.
+  const elapsedSeconds = Math.min(0.1, Math.max(0.004, (now - previousScrollTime) / 1000))
+
+  // Signed, so scrolling up flows the waves back the way they came.
+  renderer?.setScrollVelocity((scrollY - previousScrollY) / elapsedSeconds)
   previousScrollY = scrollY
-  renderer?.setScrollDistortion(0.2 + scrollDelta / 45)
+  previousScrollTime = now
 }
 
 onMounted(() => {
@@ -41,6 +49,7 @@ onMounted(() => {
     reducedMotionQuery.addEventListener('change', handleReducedMotionChange)
   }
   previousScrollY = window.scrollY
+  previousScrollTime = performance.now()
   window.addEventListener('scroll', handleScroll, { passive: true })
 
   if ('IntersectionObserver' in window) {

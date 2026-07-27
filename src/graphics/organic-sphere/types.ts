@@ -25,7 +25,7 @@ export type OrganicSphereRenderer = {
   destroy: () => void
   setInViewport: (isInViewport: boolean) => void
   setReducedMotion: (prefersReducedMotion: boolean) => void
-  setScrollDistortion: (strength: number) => void
+  setScrollVelocity: (pixelsPerSecond: number) => void
   setSettings: (settings: Partial<OrganicSphereSettings>) => void
 }
 
