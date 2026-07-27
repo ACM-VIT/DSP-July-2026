@@ -40,8 +40,10 @@ type RendererResources = {
 
 type SphereQuality = 'desktop' | 'mobile'
 
-const DESKTOP_SEGMENTS = { longitude: 72, latitude: 48 }
-const MOBILE_SEGMENTS = { longitude: 48, latitude: 32 }
+// Vertex count is (latitude + 1) * longitude, so desktop sits at 7884 — well under the
+// 65535 ceiling of the Uint16Array index buffer createSphereGrid returns.
+const DESKTOP_SEGMENTS = { longitude: 108, latitude: 72 }
+const MOBILE_SEGMENTS = { longitude: 64, latitude: 44 }
 const MOBILE_BREAKPOINT = 760
 const MAX_DEVICE_PIXEL_RATIO = 1.5
 // Wave phase advanced per pixel scrolled. One viewport of scrolling (~800px) moves
