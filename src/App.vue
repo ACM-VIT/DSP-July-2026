@@ -3,10 +3,12 @@ import Lenis from 'lenis'
 import { defineAsyncComponent, onMounted, onUnmounted, ref } from 'vue'
 import AboutEventSection from './components/AboutEventSection.vue'
 import AboutSpeakerSection from './components/AboutSpeakerSection.vue'
+import DotFieldBackground from './components/DotFieldBackground.vue'
 import EventDetailsSection from './components/EventDetailsSection.vue'
 import LandingHero from './components/LandingHero.vue'
 import OrganicWireSphere from './components/OrganicWireSphere.vue'
 import SectionIndicator from './components/SectionIndicator.vue'
+import SiteFooter from './components/SiteFooter.vue'
 import SiteHeader from './components/SiteHeader.vue'
 import { eventStartAt } from './config/event'
 import {
@@ -22,7 +24,13 @@ let lenis: Lenis | undefined
 let isSnapping = false
 let snapUnlockTimer: ReturnType<typeof window.setTimeout> | undefined
 
-const sectionIds = ['home', 'about-event', 'about-speaker', 'event-details'] as const
+const snapTargetIds = [
+  'home',
+  'about-event',
+  'about-speaker',
+  'event-details',
+  'site-footer',
+] as const
 
 function unlockSectionSnap() {
   isSnapping = false
@@ -47,14 +55,18 @@ function handleSectionWheel(event: WheelEvent) {
     return
   }
 
-  const sections = sectionIds
+  const sections = snapTargetIds
     .map((id) => document.getElementById(id))
     .filter((section): section is HTMLElement => section !== null)
 
-  if (sections.length !== sectionIds.length) return
+  if (sections.length !== snapTargetIds.length) return
 
+  // The footer is shorter than the viewport, so its own offset is past the end of the
+  // scroll range — clamping keeps both the snap target and the "which one am I on"
+  // comparison below in sync with where the page can actually stop.
+  const maxScrollTop = Math.max(0, document.documentElement.scrollHeight - window.innerHeight)
   const sectionTops = sections.map((section, index) =>
-    index === 0 ? 0 : section.getBoundingClientRect().top + window.scrollY,
+    index === 0 ? 0 : Math.min(section.getBoundingClientRect().top + window.scrollY, maxScrollTop),
   )
   const currentIndex = sectionTops.reduce(
     (closestIndex, top, index) =>
@@ -65,9 +77,10 @@ function handleSectionWheel(event: WheelEvent) {
   )
   const direction = event.deltaY > 0 ? 1 : -1
   const lastSectionIndex = sections.length - 1
-  const lastSectionTop = sectionTops[lastSectionIndex]!
 
-  if (currentIndex === lastSectionIndex && (direction > 0 || window.scrollY > lastSectionTop + 2)) {
+  if (currentIndex === lastSectionIndex && direction > 0) {
+    event.preventDefault()
+    event.stopPropagation()
     return
   }
 
@@ -132,6 +145,7 @@ const OrganicSphereDevPanel =
 
 <template>
   <div class="bg-canvas relative isolate min-h-svh overflow-x-clip">
+    <DotFieldBackground />
     <OrganicWireSphere
       class="pointer-events-none fixed inset-0 z-0 h-svh w-full"
       :settings="organicSphereSettings"
@@ -151,5 +165,6 @@ const OrganicSphereDevPanel =
       <AboutSpeakerSection />
       <EventDetailsSection />
     </main>
+    <SiteFooter />
   </div>
 </template>

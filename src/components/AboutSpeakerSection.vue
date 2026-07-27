@@ -21,6 +21,7 @@ import PixelCard from './PixelCard.vue'
     >
       <PixelCard
         variant="blue"
+        :density="0.5"
         class="h-[416px] w-[375px] max-[1100px]:h-[356px] max-[1100px]:w-[320px] max-[760px]:mx-auto max-[760px]:h-[min(calc((100vw-40px)*1.109),356px)] max-[760px]:w-[min(100%,320px)]"
       >
         <img
