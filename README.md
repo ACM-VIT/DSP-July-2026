@@ -33,8 +33,15 @@ cp .env.example .env.local
 bun run dev
 ```
 
-Set `VITE_EVENT_START_AT` to an ISO 8601 timestamp with an explicit UTC offset. The documented
-fallback is the date shown in Figma and is already in the past.
+Event details come from the build environment:
+
+- `VITE_EVENT_START_AT` and `VITE_EVENT_END_AT`: ISO 8601 timestamps with explicit UTC offsets
+- `VITE_EVENT_TIME_ZONE`: IANA time zone used for the visible date and time
+- `VITE_EVENT_VENUE`: venue copy shown in the Event Details section
+- `VITE_SITE_URL`: public origin used for canonical and social-preview URLs
+
+The values in `.env.example` are safe build fallbacks. Set the production values in Cloudflare
+before deploying; Vite embeds them at build time.
 
 ## Deployment
 

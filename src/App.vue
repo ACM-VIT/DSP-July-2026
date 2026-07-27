@@ -10,7 +10,7 @@ import OrganicWireSphere from './components/OrganicWireSphere.vue'
 import SectionIndicator from './components/SectionIndicator.vue'
 import SiteFooter from './components/SiteFooter.vue'
 import SiteHeader from './components/SiteHeader.vue'
-import { eventStartAt } from './config/event'
+import { eventConfig } from './config/event'
 import {
   defaultOrganicSphereSettings,
   type OrganicSphereSettings,
@@ -226,7 +226,7 @@ const OrganicSphereDevPanel =
         class="relative z-10 flex min-h-screen w-full flex-col items-center justify-center px-6 max-[760px]:min-h-svh max-[760px]:px-4"
         aria-label="Workshop landing"
       >
-        <LandingHero :countdown-target="eventStartAt" />
+        <LandingHero :countdown-target="eventConfig.startAt" />
       </section>
       <AboutEventSection />
       <AboutSpeakerSection />
