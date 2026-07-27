@@ -294,8 +294,6 @@ onBeforeUnmount(() => {
 .pixel-card {
   position: relative;
   display: grid;
-  width: 100%;
-  height: 100%;
   overflow: hidden;
   place-items: center;
   isolation: isolate;

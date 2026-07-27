@@ -6,7 +6,7 @@ import PixelCard from './PixelCard.vue'
 <template>
   <section
     id="about-speaker"
-    class="flex h-screen w-full scroll-mt-5 flex-col items-center justify-center px-6 py-20 max-[760px]:h-auto max-[760px]:min-h-svh max-[760px]:px-5 max-[760px]:py-[72px]"
+    class="flex min-h-screen w-full scroll-mt-5 flex-col items-center justify-center px-6 py-20 max-[760px]:min-h-svh max-[760px]:px-5 max-[760px]:py-[72px]"
     aria-labelledby="about-speaker-title"
   >
     <h2
@@ -22,7 +22,7 @@ import PixelCard from './PixelCard.vue'
       <PixelCard
         variant="blue"
         :density="0.5"
-        class="h-[416px] w-[375px] max-[1100px]:h-[356px] max-[1100px]:w-[320px] max-[760px]:mx-auto max-[760px]:h-[min(calc((100vw-40px)*1.109),356px)] max-[760px]:w-[min(100%,320px)]"
+        class="h-[416px] w-[375px] max-[1100px]:h-[356px] max-[1100px]:w-[320px] max-[760px]:mx-auto max-[760px]:aspect-[375/416] max-[760px]:h-auto max-[760px]:w-[min(100%,320px)]"
       >
         <img
           class="absolute inset-0 z-10 h-full w-full object-cover"

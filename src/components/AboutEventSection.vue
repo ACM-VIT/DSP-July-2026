@@ -1,7 +1,7 @@
 <template>
   <section
     id="about-event"
-    class="flex h-screen w-full scroll-mt-5 flex-col items-center justify-center px-6 py-20 max-[760px]:h-auto max-[760px]:min-h-svh max-[760px]:px-5 max-[760px]:py-[72px]"
+    class="flex min-h-screen w-full scroll-mt-5 flex-col items-center justify-center px-6 py-20 max-[760px]:min-h-svh max-[760px]:px-5 max-[760px]:py-[72px]"
     aria-labelledby="about-event-title"
   >
     <h2
