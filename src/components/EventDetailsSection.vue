@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import dateIcon from '../assets/icon-date.svg'
 import timeIcon from '../assets/icon-time.svg'
-import venueIcon from '../assets/icon-venue.svg'
+import platformIcon from '../assets/icon-venue.svg'
 import { eventConfig } from '../config/event'
 // import scheduleLine from '../assets/schedule-line.svg'
 
 const details = [
   { label: 'Date', value: eventConfig.dateLabel, icon: dateIcon },
   { label: 'Time', value: eventConfig.timeLabel, icon: timeIcon },
-  { label: 'Venue', value: eventConfig.venue, icon: venueIcon },
+  { label: 'Platform', value: eventConfig.platform, icon: platformIcon },
 ]
 
 /* const schedule = [

@@ -1,7 +1,7 @@
-export const DEFAULT_EVENT_START_AT = '2026-06-19T16:00:00+05:30'
-export const DEFAULT_EVENT_END_AT = '2026-06-19T17:00:00+05:30'
+export const DEFAULT_EVENT_START_AT = '2026-07-30T20:30:00+05:30'
+export const DEFAULT_EVENT_END_AT = '2026-07-30T21:30:00+05:30'
 export const DEFAULT_EVENT_TIME_ZONE = 'Asia/Kolkata'
-export const DEFAULT_EVENT_VENUE = 'Online Conference'
+export const DEFAULT_EVENT_PLATFORM = 'Google Meet'
 const DEFAULT_EVENT_DURATION_MS = 60 * 60 * 1000
 
 function resolveTimestamp(value: string | undefined, fallback: string): string {
@@ -27,8 +27,8 @@ function resolveTimeZone(value?: string): string {
   }
 }
 
-function resolveVenue(value?: string): string {
-  return value?.trim() || DEFAULT_EVENT_VENUE
+function resolvePlatform(value?: string): string {
+  return value?.trim() || DEFAULT_EVENT_PLATFORM
 }
 
 function formatEventDate(timestamp: string, timeZone: string): string {
@@ -57,14 +57,14 @@ export interface EventEnvironment {
   VITE_EVENT_START_AT?: string
   VITE_EVENT_END_AT?: string
   VITE_EVENT_TIME_ZONE?: string
-  VITE_EVENT_VENUE?: string
+  VITE_EVENT_PLATFORM?: string
 }
 
 export interface EventConfig {
   startAt: string
   endAt: string
   timeZone: string
-  venue: string
+  platform: string
   dateLabel: string
   timeLabel: string
 }
@@ -82,7 +82,7 @@ export function resolveEventConfig(env: EventEnvironment): EventConfig {
     startAt,
     endAt,
     timeZone,
-    venue: resolveVenue(env.VITE_EVENT_VENUE),
+    platform: resolvePlatform(env.VITE_EVENT_PLATFORM),
     dateLabel: formatEventDate(startAt, timeZone),
     timeLabel: `${formatEventTime(startAt, timeZone)} - ${formatEventTime(endAt, timeZone)}`,
   }
@@ -92,5 +92,5 @@ export const eventConfig = resolveEventConfig({
   VITE_EVENT_START_AT: import.meta.env.VITE_EVENT_START_AT,
   VITE_EVENT_END_AT: import.meta.env.VITE_EVENT_END_AT,
   VITE_EVENT_TIME_ZONE: import.meta.env.VITE_EVENT_TIME_ZONE,
-  VITE_EVENT_VENUE: import.meta.env.VITE_EVENT_VENUE,
+  VITE_EVENT_PLATFORM: import.meta.env.VITE_EVENT_PLATFORM,
 })

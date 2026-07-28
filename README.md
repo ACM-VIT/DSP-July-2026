@@ -37,7 +37,7 @@ Event details come from the build environment:
 
 - `VITE_EVENT_START_AT` and `VITE_EVENT_END_AT`: ISO 8601 timestamps with explicit UTC offsets
 - `VITE_EVENT_TIME_ZONE`: IANA time zone used for the visible date and time
-- `VITE_EVENT_VENUE`: venue copy shown in the Event Details section
+- `VITE_EVENT_PLATFORM`: platform shown in the Event Details section
 - `VITE_SITE_URL`: public origin used for canonical and social-preview URLs
 
 The values in `.env.example` are safe build fallbacks. Set the production values in Cloudflare
