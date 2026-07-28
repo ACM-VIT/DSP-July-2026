@@ -1,14 +1,14 @@
 <script setup lang="ts">
+import conclaveLogo from '../assets/conclave-logo.png'
 import dateIcon from '../assets/icon-date.svg'
 import timeIcon from '../assets/icon-time.svg'
-import platformIcon from '../assets/icon-venue.svg'
 import { eventConfig } from '../config/event'
 // import scheduleLine from '../assets/schedule-line.svg'
 
 const details = [
-  { label: 'Date', value: eventConfig.dateLabel, icon: dateIcon },
-  { label: 'Time', value: eventConfig.timeLabel, icon: timeIcon },
-  { label: 'Platform', value: eventConfig.platform, icon: platformIcon },
+  { label: 'Date', value: eventConfig.dateLabel, icon: dateIcon, kind: 'calendar' },
+  { label: 'Time', value: eventConfig.timeLabel, icon: timeIcon, kind: 'time' },
+  { label: 'Platform', value: eventConfig.platform, icon: conclaveLogo, kind: 'conclave' },
 ]
 
 /* const schedule = [
@@ -37,7 +37,7 @@ const details = [
 <template>
   <section
     id="event-details"
-    class="flex h-screen w-full scroll-mt-5 flex-col items-center justify-center overflow-hidden px-6 py-[clamp(48px,7vh,80px)] max-[760px]:h-svh max-[760px]:px-5 max-[760px]:py-8"
+    class="flex min-h-[max(100svh,640px)] w-full scroll-mt-5 flex-col items-center justify-center px-6 py-[clamp(48px,7svh,80px)] max-[760px]:px-5 max-[760px]:py-10"
     aria-labelledby="event-details-title"
   >
     <h2
@@ -53,18 +53,34 @@ const details = [
       <article
         v-for="(detail, index) in details"
         :key="detail.label"
-        class="event-card bg-surface grid min-h-[102px] grid-cols-[24px_minmax(0,1fr)] items-start gap-5 rounded-2xl border border-white px-[46px] py-[18px] max-[760px]:w-full max-[760px]:px-[clamp(22px,8vw,46px)] max-[420px]:min-h-24 max-[420px]:gap-4 max-[420px]:px-[22px] max-[420px]:py-4"
+        class="event-card bg-surface grid min-h-[116px] grid-cols-[56px_minmax(0,1fr)] items-center gap-5 rounded-2xl border border-white/70 px-9 py-[18px] max-[760px]:w-full max-[760px]:px-[clamp(22px,8vw,36px)] max-[420px]:min-h-[104px] max-[420px]:grid-cols-[48px_minmax(0,1fr)] max-[420px]:gap-4 max-[420px]:px-[22px] max-[420px]:py-4"
         :class="{
           'col-span-2 w-[417px] justify-self-center max-[760px]:col-auto max-[760px]:w-full':
             index === 2,
         }"
       >
-        <img class="mt-0.5 block h-6 w-6" :src="detail.icon" alt="" width="24" height="24" />
+        <img
+          class="block justify-self-center object-contain"
+          :class="{
+            'h-12 w-12 max-[420px]:h-11 max-[420px]:w-11': detail.kind === 'calendar',
+            'h-10 w-10 max-[420px]:h-9 max-[420px]:w-9': detail.kind === 'time',
+            'h-10 w-14 max-[420px]:h-9 max-[420px]:w-12': detail.kind === 'conclave',
+          }"
+          :src="detail.icon"
+          alt=""
+          aria-hidden="true"
+          :width="detail.kind === 'conclave' ? 56 : detail.kind === 'calendar' ? 48 : 40"
+          :height="detail.kind === 'calendar' ? 48 : 40"
+        />
         <div>
-          <h3 class="font-numeric text-accent text-xl leading-[1.2] font-semibold">
+          <h3
+            class="font-numeric text-accent text-xl leading-[1.2] font-semibold max-[420px]:text-lg"
+          >
             {{ detail.label }}
           </h3>
-          <p class="font-numeric mt-[9px] text-xl leading-[1.2] font-semibold">
+          <p
+            class="font-numeric mt-2 text-xl leading-[1.2] font-semibold text-pretty max-[420px]:text-lg"
+          >
             {{ detail.value }}
           </p>
         </div>

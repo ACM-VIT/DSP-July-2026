@@ -128,9 +128,9 @@ describe('App', () => {
     expect(wrapper.get('#event-details').text()).toContain('30 July 2026')
     expect(wrapper.get('#event-details').text()).toContain('8:30 PM - 9:30 PM IST')
     expect(wrapper.get('#event-details').text()).toContain('Platform')
-    expect(wrapper.get('#event-details').text()).toContain('Google Meet')
+    expect(wrapper.get('#event-details').text()).toContain('Conclave (Online)')
     expect(wrapper.get('#event-details').classes()).toEqual(
-      expect.arrayContaining(['h-screen', 'justify-center', 'overflow-hidden']),
+      expect.arrayContaining(['min-h-[max(100svh,640px)]', 'justify-center']),
     )
     expect(wrapper.findAll('.event-schedule__row')).toHaveLength(0)
     expect(wrapper.get('#event-details').text()).not.toContain('Event Schedule')

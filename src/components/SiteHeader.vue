@@ -12,18 +12,18 @@ const closeMenu = () => {
 
 <template>
   <header
-    class="absolute top-0 left-0 z-50 flex h-[91px] w-full items-center justify-between pt-[21px] pr-[43px] pl-11 max-[760px]:h-auto max-[760px]:min-h-[91px] max-[760px]:flex-wrap max-[760px]:gap-[18px] max-[760px]:p-5 max-[360px]:px-4"
+    class="absolute top-0 left-0 z-50 flex h-[91px] w-full items-center justify-between pt-[21px] pr-[43px] pl-11 max-[840px]:h-auto max-[840px]:min-h-[91px] max-[840px]:flex-wrap max-[840px]:gap-[18px] max-[840px]:p-5 max-[360px]:gap-2 max-[360px]:px-4"
   >
-    <div class="flex min-w-0 items-center gap-5 max-[760px]:gap-2.5">
+    <div class="flex min-w-0 items-center gap-5 max-[840px]:gap-2.5">
       <img
-        class="block h-[70px] w-[206px] object-contain max-[760px]:h-[46px] max-[760px]:w-[135px] max-[360px]:w-[130px]"
+        class="block h-[70px] w-[206px] object-contain max-[840px]:h-[46px] max-[840px]:w-[135px] max-[360px]:w-[130px]"
         :src="acmLogo"
         alt="ACM VIT Student Chapter"
         width="206"
         height="70"
       />
       <img
-        class="block h-[77px] w-[131px] object-contain max-[760px]:h-[52px] max-[760px]:w-[89px] max-[360px]:w-[84px]"
+        class="block h-[77px] w-[131px] object-contain max-[840px]:h-[52px] max-[840px]:w-[89px] max-[360px]:w-[84px]"
         :src="dspLogo"
         alt="ACM Distinguished Speaker Program"
         width="602"
@@ -32,7 +32,7 @@ const closeMenu = () => {
     </div>
 
     <nav
-      class="flex items-center gap-5 text-base leading-[1.2] max-[760px]:hidden"
+      class="flex items-center gap-5 text-base leading-[1.2] max-[840px]:hidden"
       aria-label="Primary navigation"
     >
       <a
@@ -56,7 +56,7 @@ const closeMenu = () => {
     </nav>
 
     <button
-      class="focus-visible:outline-accent relative hidden h-12 w-12 shrink-0 rounded-full border border-white/35 bg-black/40 focus-visible:outline-2 focus-visible:outline-offset-4 max-[760px]:block"
+      class="focus-visible:outline-accent relative hidden h-12 w-12 shrink-0 rounded-full border border-white/35 bg-black/40 focus-visible:outline-2 focus-visible:outline-offset-4 max-[840px]:block"
       type="button"
       aria-controls="mobile-navigation"
       :aria-expanded="isMenuOpen"
@@ -86,7 +86,7 @@ const closeMenu = () => {
       <nav
         v-if="isMenuOpen"
         id="mobile-navigation"
-        class="absolute top-[calc(100%+10px)] right-5 left-5 hidden overflow-hidden rounded-2xl border border-white/30 bg-black/45 p-2 shadow-2xl shadow-black/70 backdrop-blur-[32px] backdrop-saturate-150 max-[760px]:grid"
+        class="absolute top-[calc(100%+10px)] right-5 left-5 hidden overflow-hidden rounded-2xl border border-white/30 bg-black/45 p-2 shadow-2xl shadow-black/70 backdrop-blur-[32px] backdrop-saturate-150 max-[840px]:grid"
         aria-label="Mobile navigation"
       >
         <a
