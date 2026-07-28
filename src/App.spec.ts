@@ -112,6 +112,9 @@ describe('App', () => {
       'A Hands-On Workshop: Building Advanced AI Applications and Agents in One Hour',
     )
     expect(wrapper.get('img').attributes('alt')).toBe('ACM VIT Student Chapter')
+    expect(wrapper.get('img[alt="ACM Distinguished Speaker Program"]').attributes('alt')).toBe(
+      'ACM Distinguished Speaker Program',
+    )
     expect(wrapper.get('a[href="#about-event"]').text()).toBe('About Event')
     expect(wrapper.get('a[href="#about-speaker"]').text()).toBe('About Speaker')
     expect(wrapper.get('#about-event h2').text()).toBe('About the Event')
