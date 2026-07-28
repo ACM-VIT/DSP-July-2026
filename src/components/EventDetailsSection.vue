@@ -1,16 +1,17 @@
 <script setup lang="ts">
 import dateIcon from '../assets/icon-date.svg'
 import timeIcon from '../assets/icon-time.svg'
-import venueIcon from '../assets/icon-venue.svg'
-import scheduleLine from '../assets/schedule-line.svg'
+import platformIcon from '../assets/icon-venue.svg'
+import { eventConfig } from '../config/event'
+// import scheduleLine from '../assets/schedule-line.svg'
 
 const details = [
-  { label: 'Date', value: '19 June, 2026', icon: dateIcon },
-  { label: 'Time', value: '4:00 PM - 5:00 PM', icon: timeIcon },
-  { label: 'Venue', value: 'Online Conference', icon: venueIcon },
+  { label: 'Date', value: eventConfig.dateLabel, icon: dateIcon },
+  { label: 'Time', value: eventConfig.timeLabel, icon: timeIcon },
+  { label: 'Platform', value: eventConfig.platform, icon: platformIcon },
 ]
 
-const schedule = [
+/* const schedule = [
   {
     time: '4:00 PM – 4:15 PM',
     description:
@@ -30,13 +31,13 @@ const schedule = [
     time: '4:50 PM – 5:00 PM',
     description: 'stuff stuff stuff stuff',
   },
-]
+] */
 </script>
 
 <template>
   <section
     id="event-details"
-    class="min-h-[1024px] w-full scroll-mt-5 px-6 pt-[108px] pb-20 max-[760px]:min-h-0 max-[760px]:px-5 max-[760px]:py-[72px]"
+    class="flex h-screen w-full scroll-mt-5 flex-col items-center justify-center overflow-hidden px-6 py-[clamp(48px,7vh,80px)] max-[760px]:h-svh max-[760px]:px-5 max-[760px]:py-8"
     aria-labelledby="event-details-title"
   >
     <h2
@@ -70,7 +71,7 @@ const schedule = [
       </article>
     </div>
 
-    <div class="mx-auto mt-[42px] w-full max-w-[980px] max-[760px]:mt-14">
+    <!-- <div class="mx-auto mt-[42px] w-full max-w-[980px] max-[760px]:mt-14">
       <h3
         class="text-accent text-2xl leading-[1.2] font-bold [font-variation-settings:'opsz'_14,'wdth'_100]"
       >
@@ -96,6 +97,6 @@ const schedule = [
           </p>
         </article>
       </div>
-    </div>
+    </div> -->
   </section>
 </template>

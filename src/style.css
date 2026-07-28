@@ -4,7 +4,7 @@
 @import 'tailwindcss';
 
 @theme {
-  --color-canvas: #000000;
+  --color-canvas: #111315;
   --color-surface: #151515;
   --color-copy: #f9f9f9;
   --color-accent: #8dd0ff;
@@ -33,6 +33,17 @@
     min-width: 320px;
     min-height: 100svh;
     background: var(--color-canvas);
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  /* Form controls still need selection to be editable at all — the shader dev panel
+     runs on numeric inputs. */
+  input,
+  textarea,
+  select {
+    user-select: text;
+    -webkit-user-select: text;
   }
 
   @media (prefers-reduced-motion: reduce) {

@@ -30,7 +30,7 @@ type RendererResources = {
     detailAmplitude: WebGLUniformLocation
     microFrequency: WebGLUniformLocation
     microAmplitude: WebGLUniformLocation
-    scrollDistortion: WebGLUniformLocation
+    scrollFlow: WebGLUniformLocation
     rotation: WebGLUniformLocation
     cameraDistance: WebGLUniformLocation
     opacity: WebGLUniformLocation
@@ -40,10 +40,23 @@ type RendererResources = {
 
 type SphereQuality = 'desktop' | 'mobile'
 
-const DESKTOP_SEGMENTS = { longitude: 72, latitude: 48 }
+// Vertex count is (latitude + 1) * longitude, so desktop sits at 4240 — well under the
+// 65535 ceiling of the Uint16Array index buffer createSphereGrid returns.
+const DESKTOP_SEGMENTS = { longitude: 80, latitude: 52 }
 const MOBILE_SEGMENTS = { longitude: 48, latitude: 32 }
 const MOBILE_BREAKPOINT = 760
-const MAX_DEVICE_PIXEL_RATIO = 1.5
+const MAX_DEVICE_PIXEL_RATIO: Record<SphereQuality, number> = {
+  desktop: 1.25,
+  mobile: 1,
+}
+const TARGET_FRAME_INTERVAL_MS = 1000 / 30
+const FRAME_INTERVAL_TOLERANCE_MS = 0.5
+// Wave phase advanced per pixel scrolled. One viewport of scrolling (~800px) moves
+// the field by a little over one wave, so the flow reads clearly without churning.
+const SCROLL_FLOW_PER_PIXEL = 0.002
+// How fast scroll momentum bleeds off once input stops, in 1/seconds. Lower drifts
+// on for longer after you let go.
+const SCROLL_VELOCITY_DECAY = 5.5
 
 function createShader(gl: WebGL2RenderingContext, shaderType: number, source: string): WebGLShader {
   const shader = gl.createShader(shaderType)
@@ -151,7 +164,7 @@ function createResources(gl: WebGL2RenderingContext): RendererResources {
       detailAmplitude: getUniform(gl, program, 'uDetailAmplitude'),
       microFrequency: getUniform(gl, program, 'uMicroFrequency'),
       microAmplitude: getUniform(gl, program, 'uMicroAmplitude'),
-      scrollDistortion: getUniform(gl, program, 'uScrollDistortion'),
+      scrollFlow: getUniform(gl, program, 'uScrollFlow'),
       rotation: getUniform(gl, program, 'uRotation'),
       cameraDistance: getUniform(gl, program, 'uCameraDistance'),
       opacity: getUniform(gl, program, 'uOpacity'),
@@ -189,13 +202,14 @@ export function createRenderer(
   let cameraDistance = 3.05
   let animationFrame: number | undefined
   let isStarted = false
-  let isInViewport = true
+  let isRenderable = false
   let isPageVisible = !document.hidden
   let prefersReducedMotion = false
   let isContextLost = false
-  let startTime = performance.now()
-  let lastFrameTime = startTime
-  let scrollDistortion = 0
+  let elapsedAnimationSeconds = 0
+  let lastRenderedTime: number | undefined
+  let scrollFlow = 0
+  let scrollVelocity = 0
 
   configureContext(gl)
 
@@ -225,9 +239,19 @@ export function createRenderer(
     }
 
     const bounds = canvas.getBoundingClientRect()
-    const cssWidth = Math.max(1, Math.round(bounds.width))
-    const cssHeight = Math.max(1, Math.round(bounds.height))
-    const pixelRatio = Math.min(window.devicePixelRatio || 1, MAX_DEVICE_PIXEL_RATIO)
+    const cssWidth = Math.round(bounds.width)
+    const cssHeight = Math.round(bounds.height)
+
+    if (cssWidth <= 0 || cssHeight <= 0) {
+      isRenderable = false
+      cancelAnimation()
+      return
+    }
+
+    const wasRenderable = isRenderable
+    isRenderable = true
+    const nextQuality = cssWidth <= MOBILE_BREAKPOINT ? 'mobile' : 'desktop'
+    const pixelRatio = Math.min(window.devicePixelRatio || 1, MAX_DEVICE_PIXEL_RATIO[nextQuality])
     const displayWidth = Math.round(cssWidth * pixelRatio)
     const displayHeight = Math.round(cssHeight * pixelRatio)
 
@@ -237,25 +261,47 @@ export function createRenderer(
     }
 
     gl.viewport(0, 0, displayWidth, displayHeight)
-    const nextQuality = cssWidth <= MOBILE_BREAKPOINT ? 'mobile' : 'desktop'
     replaceGeometry(nextQuality)
     cameraDistance = nextQuality === 'mobile' ? 6.1 : 3.9
     projection = createPerspectiveMatrix(Math.PI / 4.5, cssWidth / cssHeight, 0.1, 20)
+
+    if (!wasRenderable) {
+      resetFrameClock()
+    }
+
     requestRender()
   }
 
-  function render(timestamp: number) {
+  function render(timestamp: number, advanceAnimation: boolean) {
     if (isContextLost || !resources || indexCount === 0) {
       return
     }
 
-    const elapsedSeconds = Math.max(0, (timestamp - startTime) / 1000)
-    const frameDelta = Math.min(0.1, Math.max(0, (timestamp - lastFrameTime) / 1000))
-    const animationTime = prefersReducedMotion ? 0 : elapsedSeconds * settings.animationSpeed
-    const rotation = prefersReducedMotion ? 0.35 : elapsedSeconds * settings.rotationSpeed
+    const elapsedSinceLastRender =
+      advanceAnimation && lastRenderedTime !== undefined
+        ? Math.max(0, (timestamp - lastRenderedTime) / 1000)
+        : 0
+    const frameDelta = Math.min(0.1, elapsedSinceLastRender)
 
-    lastFrameTime = timestamp
-    scrollDistortion *= Math.exp(-frameDelta * 5.5)
+    if (advanceAnimation) {
+      elapsedAnimationSeconds += elapsedSinceLastRender
+    }
+
+    lastRenderedTime = timestamp
+    const animationTime = prefersReducedMotion
+      ? 0
+      : elapsedAnimationSeconds * settings.animationSpeed
+    const rotation = prefersReducedMotion ? 0.35 : elapsedAnimationSeconds * settings.rotationSpeed
+
+    // Scroll speed arrives as signed px/second, so every input device — trackpad,
+    // wheel, touch — moves the waves the same distance for the same physical scroll.
+    // Integrating velocity into a phase means the wave field keeps travelling and
+    // eases to a stop rather than an effect switching on and off. Both the decay and
+    // the integration are in seconds, so motion matches at 60Hz, 120Hz or while
+    // stuttering. The phase is signed and tracks scroll direction, so it stays bounded
+    // by how far the page can actually scroll rather than growing without limit.
+    scrollVelocity *= Math.exp(-frameDelta * SCROLL_VELOCITY_DECAY)
+    scrollFlow += scrollVelocity * frameDelta * SCROLL_FLOW_PER_PIXEL
 
     gl.clear(gl.COLOR_BUFFER_BIT)
     gl.useProgram(resources.program)
@@ -275,10 +321,7 @@ export function createRenderer(
     gl.uniform1f(resources.uniforms.detailAmplitude, settings.detailAmplitude)
     gl.uniform1f(resources.uniforms.microFrequency, settings.microFrequency)
     gl.uniform1f(resources.uniforms.microAmplitude, settings.microAmplitude)
-    gl.uniform1f(
-      resources.uniforms.scrollDistortion,
-      prefersReducedMotion ? 0 : scrollDistortion,
-    )
+    gl.uniform1f(resources.uniforms.scrollFlow, prefersReducedMotion ? 0 : scrollFlow)
     gl.uniform1f(resources.uniforms.rotation, rotation)
     gl.uniform1f(resources.uniforms.cameraDistance, cameraDistance)
     gl.uniform1f(resources.uniforms.opacity, settings.opacity)
@@ -291,7 +334,7 @@ export function createRenderer(
   }
 
   function shouldAnimate() {
-    return isStarted && isInViewport && isPageVisible && !prefersReducedMotion && !isContextLost
+    return isStarted && isRenderable && isPageVisible && !prefersReducedMotion && !isContextLost
   }
 
   function cancelAnimation() {
@@ -303,9 +346,23 @@ export function createRenderer(
     animationFrame = undefined
   }
 
+  function resetFrameClock() {
+    lastRenderedTime = undefined
+  }
+
   function drawFrame(timestamp: number) {
     animationFrame = undefined
-    render(timestamp)
+
+    if (!shouldAnimate()) {
+      return
+    }
+
+    if (
+      lastRenderedTime === undefined ||
+      timestamp - lastRenderedTime >= TARGET_FRAME_INTERVAL_MS - FRAME_INTERVAL_TOLERANCE_MS
+    ) {
+      render(timestamp, true)
+    }
 
     if (shouldAnimate()) {
       animationFrame = window.requestAnimationFrame(drawFrame)
@@ -313,13 +370,13 @@ export function createRenderer(
   }
 
   function requestRender() {
-    if (!isStarted || !isInViewport || !isPageVisible || isContextLost) {
+    if (!isStarted || !isRenderable || !isPageVisible || isContextLost) {
       return
     }
 
     if (prefersReducedMotion) {
       cancelAnimation()
-      render(startTime)
+      render(performance.now(), false)
       return
     }
 
@@ -332,9 +389,26 @@ export function createRenderer(
     isPageVisible = !document.hidden
 
     if (isPageVisible) {
+      resetFrameClock()
       requestRender()
     } else {
       cancelAnimation()
+      resetFrameClock()
+    }
+  }
+
+  function handlePageHide() {
+    isPageVisible = false
+    cancelAnimation()
+    resetFrameClock()
+  }
+
+  function handlePageShow() {
+    isPageVisible = !document.hidden
+
+    if (isPageVisible) {
+      resetFrameClock()
+      requestRender()
     }
   }
 
@@ -351,8 +425,7 @@ export function createRenderer(
     configureContext(gl)
     quality = undefined
     topology = undefined
-    startTime = performance.now()
-    lastFrameTime = startTime
+    resetFrameClock()
     resize()
   }
 
@@ -366,6 +439,8 @@ export function createRenderer(
   }
 
   document.addEventListener('visibilitychange', handleVisibilityChange)
+  window.addEventListener('pagehide', handlePageHide)
+  window.addEventListener('pageshow', handlePageShow)
   canvas.addEventListener('webglcontextlost', handleContextLost)
   canvas.addEventListener('webglcontextrestored', handleContextRestored)
 
@@ -376,30 +451,25 @@ export function createRenderer(
       }
 
       isStarted = true
-      startTime = performance.now()
-      lastFrameTime = startTime
+      resetFrameClock()
       resize()
-      requestRender()
-    },
-    setInViewport(nextIsInViewport) {
-      isInViewport = nextIsInViewport
-
-      if (isInViewport) {
-        requestRender()
-      } else {
-        cancelAnimation()
-      }
     },
     setReducedMotion(nextPrefersReducedMotion) {
       prefersReducedMotion = nextPrefersReducedMotion
+      resetFrameClock()
       requestRender()
     },
-    setScrollDistortion(strength) {
-      if (prefersReducedMotion) {
+    setScrollVelocity(pixelsPerSecond) {
+      if (prefersReducedMotion || !Number.isFinite(pixelsPerSecond)) {
         return
       }
 
-      scrollDistortion = Math.max(scrollDistortion, Math.min(1, Math.max(0, strength)))
+      // Several scroll events can land in one frame; keep the fastest sample so a
+      // burst of events reads as one fast scroll rather than several slow ones.
+      // Compared by magnitude, since the sign carries the scroll direction.
+      if (Math.abs(pixelsPerSecond) > Math.abs(scrollVelocity)) {
+        scrollVelocity = pixelsPerSecond
+      }
       requestRender()
     },
     setSettings(nextSettings) {
@@ -418,6 +488,8 @@ export function createRenderer(
       resizeObserver?.disconnect()
       window.removeEventListener('resize', resize)
       document.removeEventListener('visibilitychange', handleVisibilityChange)
+      window.removeEventListener('pagehide', handlePageHide)
+      window.removeEventListener('pageshow', handlePageShow)
       canvas.removeEventListener('webglcontextlost', handleContextLost)
       canvas.removeEventListener('webglcontextrestored', handleContextRestored)
 
