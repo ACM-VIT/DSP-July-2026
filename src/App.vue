@@ -223,7 +223,7 @@ const OrganicSphereDevPanel =
     <main class="relative z-10">
       <section
         id="home"
-        class="relative z-10 flex min-h-screen w-full flex-col items-center justify-center px-6 max-[760px]:min-h-svh max-[760px]:px-4"
+        class="relative z-10 flex min-h-[max(100svh,640px)] w-full flex-col items-center justify-start px-6 pt-[clamp(116px,15svh,152px)] pb-[clamp(36px,6svh,64px)] max-[760px]:px-4 max-[760px]:pt-[112px]"
         aria-label="Workshop landing"
       >
         <LandingHero :countdown-target="eventConfig.startAt" />

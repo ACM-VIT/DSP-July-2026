@@ -54,7 +54,7 @@ onBeforeUnmount(() => {
 
 <template>
   <nav
-    class="fixed top-1/2 right-4 z-40 flex -translate-y-1/2 flex-col gap-1 rounded-full border border-white/20 bg-black/45 p-1.5 shadow-lg shadow-black/30 backdrop-blur-xl max-[760px]:right-3"
+    class="fixed top-1/2 right-4 z-40 flex -translate-y-1/2 flex-col gap-1 rounded-full border border-white/20 bg-black/45 p-1.5 shadow-lg shadow-black/30 backdrop-blur-xl max-[760px]:hidden"
     aria-label="Section navigation"
   >
     <a
