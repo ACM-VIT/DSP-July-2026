@@ -22,7 +22,7 @@ import PixelCard from './PixelCard.vue'
       <PixelCard
         variant="blue"
         :density="0.5"
-        class="h-[416px] w-[375px] max-[1100px]:h-[356px] max-[1100px]:w-[320px] max-[760px]:mx-auto max-[760px]:aspect-[375/416] max-[760px]:h-auto max-[760px]:w-[min(100%,320px)]"
+        class="h-[416px] w-[375px] -translate-y-10 max-[1100px]:h-[356px] max-[1100px]:w-[320px] max-[1100px]:-translate-y-6 max-[760px]:mx-auto max-[760px]:aspect-[375/416] max-[760px]:h-auto max-[760px]:w-[min(100%,320px)] max-[760px]:translate-y-0"
       >
         <img
           class="absolute inset-0 z-10 h-full w-full object-cover"
