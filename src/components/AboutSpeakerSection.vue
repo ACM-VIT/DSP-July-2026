@@ -6,7 +6,7 @@ import PixelCard from './PixelCard.vue'
 <template>
   <section
     id="about-speaker"
-    class="flex h-screen w-full scroll-mt-5 flex-col items-center justify-center px-6 py-20 max-[760px]:h-auto max-[760px]:min-h-svh max-[760px]:px-5 max-[760px]:py-[72px]"
+    class="flex min-h-screen w-full scroll-mt-5 flex-col items-center justify-center px-6 py-20 max-[760px]:min-h-svh max-[760px]:px-5 max-[760px]:py-[72px]"
     aria-labelledby="about-speaker-title"
   >
     <h2
@@ -22,7 +22,7 @@ import PixelCard from './PixelCard.vue'
       <PixelCard
         variant="blue"
         :density="0.5"
-        class="h-[416px] w-[375px] max-[1100px]:h-[356px] max-[1100px]:w-[320px] max-[760px]:mx-auto max-[760px]:h-[min(calc((100vw-40px)*1.109),356px)] max-[760px]:w-[min(100%,320px)]"
+        class="h-[416px] w-[375px] -translate-y-10 max-[1100px]:h-[356px] max-[1100px]:w-[320px] max-[1100px]:-translate-y-6 max-[760px]:mx-auto max-[760px]:aspect-[375/416] max-[760px]:h-auto max-[760px]:w-[min(100%,320px)] max-[760px]:translate-y-0"
       >
         <img
           class="absolute inset-0 z-10 h-full w-full object-cover"
@@ -37,23 +37,20 @@ import PixelCard from './PixelCard.vue'
         class="text-copy grid gap-6 text-justify text-xl leading-[1.22] [font-variation-settings:'opsz'_14,'wdth'_100] max-[760px]:gap-5 max-[760px]:text-left max-[760px]:text-[17px] max-[760px]:leading-[1.35]"
       >
         <p>
-          Mehdi Bahrami is a Principal Researcher at Fujitsu Research of America in California. His
-          work centres on machine learning and natural language processing. Before being a part of
-          Fujitsu, he was part of the Cloud Lab at University of California, Merced where he
-          completed his PhD in Electrical Engineering and Computer Science.
+          Dr. Mehdi Bahrami is a Principal Researcher at Fujitsu Research of America, specializing
+          in machine learning and natural language processing. He earned his PhD in Electrical
+          Engineering and Computer Science from the University of California, Merced, after working
+          at its Cloud Lab.
         </p>
         <p>
-          He has experience of over a decade in the software industry and is a stellar inventor with
-          a multitude of patents, more than 34 granted US parents with much more pending. His
-          research as been widely published and covered by various outlets even including MIT
-          Technology Review. He also serves as an editor and reviewer for various international
-          computer science journals.
+          With over a decade of industry experience, he holds more than 34 granted U.S. patents and
+          has published widely, with his work also featured in MIT Technology Review. He also serves
+          as an editor and reviewer for international computer science journals.
         </p>
         <p>
-          Mr. Bahrami is a frequented feature speaker at multiple international conferences. He’s
-          also previously twice served on cloud computing panels for the U.S National Science
-          Foundation. His laurels and recognitions are not limited to and the 2024 IEEE Outstanding
-          Engineer Award, the Best Demo Award at ACM ICN 2016 and the 2015 Distinguished Leadership
+          Dr. Bahrami, a frequent international speaker, has served twice in the U.S. National
+          Science Foundation cloud computing panels. His honors include the 2024 IEEE Outstanding
+          Engineer Award, the ACM ICN 2016 Best Demo Award, and the 2015 Distinguished Leadership
           Award from the Margo F. Souza Leadership Center.
         </p>
       </div>

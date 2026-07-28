@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import acmLogo from '../assets/acm-vit-logo.svg'
 import facebookIcon from '../assets/icon-facebook.svg'
-import hashnodeIcon from '../assets/icon-hashnode.png'
 import instagramIcon from '../assets/icon-instagram.svg'
 import linkedinIcon from '../assets/icon-linkedin.svg'
+import mediumIcon from '../assets/icon-medium.png'
 import twitterIcon from '../assets/icon-twitter.svg'
 import youtubeIcon from '../assets/icon-youtube.png'
 import { socialLinks } from '../config/social'
@@ -12,7 +12,7 @@ const iconSources: Record<(typeof socialLinks)[number]['id'], string> = {
   twitter: twitterIcon,
   instagram: instagramIcon,
   facebook: facebookIcon,
-  hashnode: hashnodeIcon,
+  medium: mediumIcon,
   linkedin: linkedinIcon,
   youtube: youtubeIcon,
 }
@@ -22,7 +22,7 @@ const iconSizes: Record<(typeof socialLinks)[number]['id'], { width: number; hei
   twitter: { width: 31.074, height: 31.074 },
   instagram: { width: 31.074, height: 31.074 },
   facebook: { width: 31.038, height: 30.038 },
-  hashnode: { width: 27, height: 27 },
+  medium: { width: 27, height: 27 },
   linkedin: { width: 31.074, height: 31.074 },
   youtube: { width: 30, height: 30 },
 }

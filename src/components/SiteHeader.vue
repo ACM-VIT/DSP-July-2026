@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import acmLogo from '../assets/acm-vit-logo.png'
+import dspLogo from '../assets/dsp-speaker-program.png'
 
 const isMenuOpen = ref(false)
 
@@ -13,13 +14,22 @@ const closeMenu = () => {
   <header
     class="absolute top-0 left-0 z-50 flex h-[91px] w-full items-center justify-between pt-[21px] pr-[43px] pl-11 max-[760px]:h-auto max-[760px]:min-h-[91px] max-[760px]:flex-wrap max-[760px]:gap-[18px] max-[760px]:p-5 max-[360px]:px-4"
   >
-    <img
-      class="block h-[70px] w-[206px] object-contain max-[760px]:h-[59px] max-[760px]:w-[174px] max-[360px]:h-[53px] max-[360px]:w-[156px]"
-      :src="acmLogo"
-      alt="ACM VIT Student Chapter"
-      width="206"
-      height="70"
-    />
+    <div class="flex min-w-0 items-center gap-5 max-[760px]:gap-2.5">
+      <img
+        class="block h-[70px] w-[206px] object-contain max-[760px]:h-[46px] max-[760px]:w-[135px] max-[360px]:w-[130px]"
+        :src="acmLogo"
+        alt="ACM VIT Student Chapter"
+        width="206"
+        height="70"
+      />
+      <img
+        class="block h-[77px] w-[131px] object-contain max-[760px]:h-[52px] max-[760px]:w-[89px] max-[360px]:w-[84px]"
+        :src="dspLogo"
+        alt="ACM Distinguished Speaker Program"
+        width="602"
+        height="353"
+      />
+    </div>
 
     <nav
       class="flex items-center gap-5 text-base leading-[1.2] max-[760px]:hidden"

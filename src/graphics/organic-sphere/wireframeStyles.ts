@@ -7,6 +7,7 @@ export const wireframeStyleIds = [
   'polar-threads',
   'chaos-lattice',
   'ghost-xray',
+  'aqua-mesh',
 ] as const
 
 export type WireframeStyle = (typeof wireframeStyleIds)[number]
@@ -68,6 +69,16 @@ export const wireframeStyles: readonly WireframeStyleDefinition[] = [
     topology: 'grid',
     shaderIndex: 5,
     swatches: ['#eaf7ff', '#6750a4'],
+  },
+  {
+    id: 'aqua-mesh',
+    label: 'Aqua Mesh',
+    description: 'A dense triangulated lattice with tall liquid spikes.',
+    topology: 'lattice',
+    // The fragment shader branches only on 1-5, so 6 falls through to its clean ice
+    // colouring — the lattice geometry without Chaos Lattice's spark flicker.
+    shaderIndex: 6,
+    swatches: ['#c2e5fe', '#ffffff'],
   },
 ]
 
