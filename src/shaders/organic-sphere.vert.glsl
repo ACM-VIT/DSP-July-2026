@@ -63,13 +63,13 @@ float fbm(vec3 position) {
   float value = 0.0;
   float amplitude = 0.5;
 
-  for (int octave = 0; octave < 3; octave += 1) {
+  for (int octave = 0; octave < 2; octave += 1) {
     value += noise3d(position) * amplitude;
     position = position * 2.03 + vec3(0.83, 1.71, 2.47);
     amplitude *= 0.5;
   }
 
-  return value / 0.875;
+  return value / 0.75;
 }
 
 vec3 rotateObject(vec3 position, float rotation) {

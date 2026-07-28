@@ -9,7 +9,6 @@ const props = defineProps<{
 }>()
 
 let renderer: OrganicSphereRenderer | null = null
-let intersectionObserver: IntersectionObserver | null = null
 let reducedMotionQuery: MediaQueryList | null = null
 let previousScrollY = 0
 let previousScrollTime = 0
@@ -52,14 +51,6 @@ onMounted(() => {
   previousScrollTime = performance.now()
   window.addEventListener('scroll', handleScroll, { passive: true })
 
-  if ('IntersectionObserver' in window) {
-    intersectionObserver = new IntersectionObserver(
-      ([entry]) => renderer?.setInViewport(entry?.isIntersecting ?? false),
-      { threshold: 0.01 },
-    )
-    intersectionObserver.observe(canvas.value)
-  }
-
   renderer.start()
 })
 
@@ -70,7 +61,6 @@ watch(
 )
 
 onBeforeUnmount(() => {
-  intersectionObserver?.disconnect()
   reducedMotionQuery?.removeEventListener('change', handleReducedMotionChange)
   window.removeEventListener('scroll', handleScroll)
   renderer?.destroy()
