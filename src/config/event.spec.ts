@@ -21,8 +21,8 @@ describe('resolveEventConfig', () => {
       endAt: '2030-01-01T13:30:00+05:30',
       timeZone: 'Asia/Kolkata',
       platform: 'Microsoft Teams',
-      dateLabel: '1 January, 2030',
-      timeLabel: '12:00 PM - 1:30 PM',
+      dateLabel: '1 January 2030',
+      timeLabel: '12:00 PM - 1:30 PM IST',
     })
   })
 
@@ -39,8 +39,8 @@ describe('resolveEventConfig', () => {
       endAt: DEFAULT_EVENT_END_AT,
       timeZone: DEFAULT_EVENT_TIME_ZONE,
       platform: DEFAULT_EVENT_PLATFORM,
-      dateLabel: '30 July, 2026',
-      timeLabel: '8:30 PM - 9:30 PM',
+      dateLabel: '30 July 2026',
+      timeLabel: '8:30 PM - 9:30 PM IST',
     })
   })
 
@@ -49,6 +49,6 @@ describe('resolveEventConfig', () => {
       resolveEventConfig({
         VITE_EVENT_START_AT: '2030-01-01T12:00:00+05:30',
       }).timeLabel,
-    ).toBe('12:00 PM - 1:00 PM')
+    ).toBe('12:00 PM - 1:00 PM IST')
   })
 })

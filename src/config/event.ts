@@ -41,7 +41,7 @@ function formatEventDate(timestamp: string, timeZone: string): string {
   const part = (type: Intl.DateTimeFormatPartTypes) =>
     parts.find((datePart) => datePart.type === type)?.value
 
-  return `${part('day')} ${part('month')}, ${part('year')}`
+  return `${part('day')} ${part('month')} ${part('year')}`
 }
 
 function formatEventTime(timestamp: string, timeZone: string): string {
@@ -84,7 +84,7 @@ export function resolveEventConfig(env: EventEnvironment): EventConfig {
     timeZone,
     platform: resolvePlatform(env.VITE_EVENT_PLATFORM),
     dateLabel: formatEventDate(startAt, timeZone),
-    timeLabel: `${formatEventTime(startAt, timeZone)} - ${formatEventTime(endAt, timeZone)}`,
+    timeLabel: `${formatEventTime(startAt, timeZone)} - ${formatEventTime(endAt, timeZone)} IST`,
   }
 }
 
