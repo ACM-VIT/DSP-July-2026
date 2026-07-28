@@ -116,6 +116,10 @@ describe('App', () => {
     expect(wrapper.get('a[href="#about-speaker"]').text()).toBe('About Speaker')
     expect(wrapper.get('#about-event h2').text()).toBe('About the Event')
     expect(wrapper.get('#about-speaker h2').text()).toBe('About The Speaker')
+    expect(wrapper.get('#about-event').text()).toContain('This ACM Distinguished Speaker Program')
+    expect(wrapper.get('#about-speaker').text()).toContain(
+      'Dr. Mehdi Bahrami is a Principal Researcher',
+    )
     expect(wrapper.get('#about-speaker img').attributes('alt')).toBe('Mehdi Bahrami')
     expect(wrapper.get('#event-details h2').text()).toBe('Event Details')
     expect(wrapper.get('#event-details').text()).toContain('30 July, 2026')
