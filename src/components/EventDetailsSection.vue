@@ -25,7 +25,7 @@ const details = [
     value: eventConfig.platform,
     icon: conclaveLogo,
     kind: 'conclave',
-    href: 'https://conclave.acmvit.in/dsp-session',
+    href: eventConfig.sessionUrl,
   },
 ]
 
