@@ -129,6 +129,12 @@ describe('App', () => {
     expect(wrapper.get('#event-details').text()).toContain('8:30 PM - 9:30 PM IST')
     expect(wrapper.get('#event-details').text()).toContain('Platform')
     expect(wrapper.get('#event-details').text()).toContain('Conclave (Online)')
+    expect(
+      wrapper.get('a[href="https://conclave.acmvit.in/dsp-session"]').attributes(),
+    ).toMatchObject({
+      target: '_blank',
+      rel: 'noopener noreferrer',
+    })
     expect(wrapper.get('#event-details').classes()).toEqual(
       expect.arrayContaining(['min-h-[max(100svh,640px)]', 'justify-center']),
     )
