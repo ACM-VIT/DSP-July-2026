@@ -6,9 +6,27 @@ import { eventConfig } from '../config/event'
 // import scheduleLine from '../assets/schedule-line.svg'
 
 const details = [
-  { label: 'Date', value: eventConfig.dateLabel, icon: dateIcon, kind: 'calendar' },
-  { label: 'Time', value: eventConfig.timeLabel, icon: timeIcon, kind: 'time' },
-  { label: 'Platform', value: eventConfig.platform, icon: conclaveLogo, kind: 'conclave' },
+  {
+    label: 'Date',
+    value: eventConfig.dateLabel,
+    icon: dateIcon,
+    kind: 'calendar',
+    href: undefined,
+  },
+  {
+    label: 'Time',
+    value: eventConfig.timeLabel,
+    icon: timeIcon,
+    kind: 'time',
+    href: undefined,
+  },
+  {
+    label: 'Platform',
+    value: eventConfig.platform,
+    icon: conclaveLogo,
+    kind: 'conclave',
+    href: 'https://conclave.acmvit.in/dsp-session',
+  },
 ]
 
 /* const schedule = [
@@ -50,13 +68,20 @@ const details = [
     <div
       class="mx-auto mt-11 grid w-full max-w-[878px] grid-cols-[repeat(2,minmax(0,417px))] justify-center gap-x-11 gap-y-[38px] max-[760px]:mt-12 max-[760px]:max-w-[417px] max-[760px]:grid-cols-1 max-[760px]:gap-[18px]"
     >
-      <article
+      <component
         v-for="(detail, index) in details"
         :key="detail.label"
+        :is="detail.href ? 'a' : 'article'"
+        :href="detail.href"
+        :target="detail.href ? '_blank' : undefined"
+        :rel="detail.href ? 'noopener noreferrer' : undefined"
+        :aria-label="detail.href ? `Open ${detail.value} session (opens in a new tab)` : undefined"
         class="event-card bg-surface grid min-h-[116px] grid-cols-[56px_minmax(0,1fr)] items-center gap-5 rounded-2xl border border-white/70 px-9 py-[18px] max-[760px]:w-full max-[760px]:px-[clamp(22px,8vw,36px)] max-[420px]:min-h-[104px] max-[420px]:grid-cols-[48px_minmax(0,1fr)] max-[420px]:gap-4 max-[420px]:px-[22px] max-[420px]:py-4"
         :class="{
           'col-span-2 w-[417px] justify-self-center max-[760px]:col-auto max-[760px]:w-full':
             index === 2,
+          'cursor-pointer text-inherit no-underline transition-colors hover:border-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white':
+            detail.href,
         }"
       >
         <img
@@ -84,7 +109,7 @@ const details = [
             {{ detail.value }}
           </p>
         </div>
-      </article>
+      </component>
     </div>
 
     <!-- <div class="mx-auto mt-[42px] w-full max-w-[980px] max-[760px]:mt-14">
