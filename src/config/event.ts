@@ -2,6 +2,7 @@ export const DEFAULT_EVENT_START_AT = '2026-07-30T20:30:00+05:30'
 export const DEFAULT_EVENT_END_AT = '2026-07-30T21:30:00+05:30'
 export const DEFAULT_EVENT_TIME_ZONE = 'Asia/Kolkata'
 export const DEFAULT_EVENT_PLATFORM = 'Conclave (Online)'
+export const DEFAULT_EVENT_SESSION_URL = 'https://conclave.acmvit.in/dsp-session'
 const DEFAULT_EVENT_DURATION_MS = 60 * 60 * 1000
 
 function resolveTimestamp(value: string | undefined, fallback: string): string {
@@ -31,6 +32,20 @@ function resolvePlatform(value?: string): string {
   return value?.trim() || DEFAULT_EVENT_PLATFORM
 }
 
+function resolveSessionUrl(value?: string): string {
+  const candidate = value?.trim()
+
+  if (!candidate) {
+    return DEFAULT_EVENT_SESSION_URL
+  }
+
+  try {
+    return new URL(candidate).toString()
+  } catch {
+    return DEFAULT_EVENT_SESSION_URL
+  }
+}
+
 function formatEventDate(timestamp: string, timeZone: string): string {
   const parts = new Intl.DateTimeFormat('en-GB', {
     day: 'numeric',
@@ -58,6 +73,7 @@ export interface EventEnvironment {
   VITE_EVENT_END_AT?: string
   VITE_EVENT_TIME_ZONE?: string
   VITE_EVENT_PLATFORM?: string
+  VITE_EVENT_SESSION_URL?: string
 }
 
 export interface EventConfig {
@@ -65,6 +81,7 @@ export interface EventConfig {
   endAt: string
   timeZone: string
   platform: string
+  sessionUrl: string
   dateLabel: string
   timeLabel: string
 }
@@ -83,6 +100,7 @@ export function resolveEventConfig(env: EventEnvironment): EventConfig {
     endAt,
     timeZone,
     platform: resolvePlatform(env.VITE_EVENT_PLATFORM),
+    sessionUrl: resolveSessionUrl(env.VITE_EVENT_SESSION_URL),
     dateLabel: formatEventDate(startAt, timeZone),
     timeLabel: `${formatEventTime(startAt, timeZone)} - ${formatEventTime(endAt, timeZone)} IST`,
   }
@@ -93,4 +111,5 @@ export const eventConfig = resolveEventConfig({
   VITE_EVENT_END_AT: import.meta.env.VITE_EVENT_END_AT,
   VITE_EVENT_TIME_ZONE: import.meta.env.VITE_EVENT_TIME_ZONE,
   VITE_EVENT_PLATFORM: import.meta.env.VITE_EVENT_PLATFORM,
+  VITE_EVENT_SESSION_URL: import.meta.env.VITE_EVENT_SESSION_URL,
 })
